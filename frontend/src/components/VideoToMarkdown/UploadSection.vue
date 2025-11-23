@@ -86,8 +86,6 @@ const styleList = [
   { label: 'xiaohongshu', name: '小红书', icon: new URL('../../assets/小红书.svg', import.meta.url).href },
   { label: 'wechat', name: '公众号', icon: new URL('../../assets/微信公众号.svg', import.meta.url).href },
   { label: 'summary', name: '内容总结', icon: new URL('../../assets/汇总.svg', import.meta.url).href },
-  { label: 'mind', name: '思维导图', icon: new URL('../../assets/思维导图.svg', import.meta.url).href },
-  { label: 'cc', name: '字幕文件', icon: new URL('../../assets/字幕.svg', import.meta.url).href },
 ]
 
 const localStyle = ref(props.style || '')
@@ -127,8 +125,14 @@ const handleMaxTokensChange = (val) => {
   <div class="upload-section-outer">
     <div class="upload-section" :class="{ 'loading-state': ffmpegLoading }">
       <div class="welcome">
-        <div class="welcome-title">你好，我是 <span class="ai-highlight">AI 图文创作助手</span></div>
-        <div class="welcome-desc">上传你的视频或MP3音频，我会帮你自动转写并生成多种风格的图文内容。</div>
+        <div class="welcome-title">你好，我是 <span class="ai-highlight">智梦AI</span></div>
+        <div class="welcome-desc">
+          <p class="desc-line">上传你的视频或MP3音频，我会帮你自动转写并生成多种风格的图文内容。</p>
+          <p class="desc-line">✨ 智能识别：支持多种视频和音频格式，自动提取音轨并转写为文字</p>
+          <p class="desc-line">📝 多风格输出：支持知识笔记、小红书、公众号、内容总结等多种风格</p>
+          <p class="desc-line">🎯 精准处理：基于AI大模型，智能理解内容并生成高质量文档</p>
+          <p class="desc-line">⚡ 快速高效：一键处理，无需复杂操作，轻松完成音视频转文档</p>
+        </div>
       </div>
       <!-- 仅在未上传文件时显示风格支持列表和acceptHint -->
       <div v-if="!props.file">
@@ -200,7 +204,7 @@ const handleMaxTokensChange = (val) => {
             <el-radio-group v-model="localStyle" :disabled="isProcessing" @change="handleStyleChange" size="large"
               class="style-radio-group-flex">
               <el-radio-button v-for="item in styleList" :key="item.label" :label="item.label"
-                class="style-radio-btn-flex" :disabled="item.label === 'cc'">
+                class="style-radio-btn-flex">
                 <img :src="item.icon" :alt="item.name" class="style-radio-icon" />
                 {{ item.name }}
               </el-radio-button>
@@ -246,8 +250,8 @@ const handleMaxTokensChange = (val) => {
   width: 60vw;
   max-width: 900px;
   min-width: 340px;
-  background: #fff;
-  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-radius: 24px;
   padding: 2.8rem 2.2rem 2.2rem 2.2rem;
   border: none;
   box-sizing: border-box;
@@ -256,11 +260,16 @@ const handleMaxTokensChange = (val) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #23272f;
+  color: #e2e8f0;
   position: relative;
-  box-shadow: 0 4px 32px 0 rgba(60, 80, 120, 0.08), 0 1.5px 6px 0 rgba(60, 80, 120, 0.03);
-  border: 1.5px solid #f2f3f5;
-  transition: box-shadow 0.2s;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 2px 12px rgba(99, 102, 241, 0.3);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.upload-section:hover {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(99, 102, 241, 0.4);
+  border-color: rgba(129, 140, 248, 0.5);
 }
 
 .welcome {
@@ -270,30 +279,46 @@ const handleMaxTokensChange = (val) => {
 }
 
 .welcome-title {
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 800;
-  letter-spacing: 1px;
-  margin-bottom: 0.5rem;
-  color: #23272f;
-  line-height: 1.2;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.8rem;
+  color: #ffffff;
+  line-height: 1.3;
 }
 
 .ai-highlight {
-  color: #23272f;
-  background: linear-gradient(90deg, #23272f 40%, #444950 100%);
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 900;
   letter-spacing: 0.5px;
+  position: relative;
+  text-shadow: 0 0 20px rgba(129, 140, 248, 0.3);
 }
 
 .welcome-desc {
-  font-size: 1.08rem;
-  color: #6b7280;
+  font-size: 1rem;
+  color: #94a3b8;
   margin-bottom: 0.2rem;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.welcome-desc .desc-line {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.8;
+}
+
+.welcome-desc .desc-line:first-child {
+  margin-top: 0;
+  font-size: 1.05rem;
+  color: #e2e8f0;
+  font-weight: 500;
 }
 
 .style-support-list {
@@ -310,19 +335,21 @@ const handleMaxTokensChange = (val) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #f5f6fa;
-  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 16px;
   padding: 0.7rem 1.1rem 0.5rem 1.1rem;
-  box-shadow: 0 1px 4px 0 rgba(60, 80, 120, 0.04);
-  border: 1px solid #f0f1f3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(99, 102, 241, 0.3);
   min-width: 80px;
   min-height: 80px;
-  transition: box-shadow 0.18s, border-color 0.18s;
+  transition: all 0.3s ease;
 }
 
 .style-support-item:hover {
-  box-shadow: 0 4px 16px 0 rgba(60, 80, 120, 0.10);
-  border-color: #e0e3e8;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  border-color: rgba(129, 140, 248, 0.5);
+  transform: translateY(-2px);
+  background: rgba(99, 102, 241, 0.2);
 }
 
 .style-support-icon {
@@ -335,33 +362,45 @@ const handleMaxTokensChange = (val) => {
 
 .style-support-name {
   font-size: 0.98rem;
-  color: #23272f;
+  color: #e2e8f0;
   font-weight: 600;
   letter-spacing: 0.1px;
 }
 
 .section-title {
-  font-size: 1.13rem;
-  color: #23272f;
+  font-size: 1.15rem;
+  color: #ffffff;
   margin-bottom: 0.8rem;
   font-weight: 700;
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   letter-spacing: 0.2px;
 }
 
 .section-title .el-icon {
   font-size: 1.3rem;
-  color: #23272f;
-  background: #f3f4f6;
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.3);
   border-radius: 50%;
-  padding: 3px;
+  padding: 6px;
 }
 
 .uploader {
   width: 100%;
+}
+
+.uploader :deep(.el-upload) {
+  border: 2px dashed rgba(129, 140, 248, 0.4) !important;
+  border-radius: 16px !important;
+  background: rgba(15, 23, 42, 0.4) !important;
+  transition: all 0.3s ease;
+}
+
+.uploader :deep(.el-upload:hover) {
+  border-color: rgba(129, 140, 248, 0.7) !important;
+  background: rgba(99, 102, 241, 0.15) !important;
 }
 
 .upload-content {
@@ -370,33 +409,39 @@ const handleMaxTokensChange = (val) => {
 }
 
 .upload-icon-wrapper {
-  width: 58px;
-  height: 58px;
-  background: linear-gradient(135deg, #f3f4f6 60%, #fff 100%);
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   border-radius: 50%;
-  margin: 0 auto 0.7rem;
+  margin: 0 auto 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2.5px solid #23272f;
-  box-shadow: 0 2px 8px 0 rgba(60, 80, 120, 0.06);
+  border: none;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.upload-icon-wrapper:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
 }
 
 .upload-icon {
-  font-size: 2.1rem;
-  color: #23272f;
+  font-size: 2.2rem;
+  color: #ffffff;
 }
 
 .upload-title {
-  font-size: 1.18rem;
-  color: #23272f;
+  font-size: 1.2rem;
+  color: #ffffff;
   margin: 0.5rem 0;
-  font-weight: 600;
-  letter-spacing: 0.1px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
 .upload-desc {
-  color: #6b7280;
+  color: #94a3b8;
   line-height: 1.6;
   font-size: 1.01rem;
   margin-top: 0.2rem;
@@ -404,7 +449,7 @@ const handleMaxTokensChange = (val) => {
 
 .upload-formats {
   font-size: 0.93rem;
-  color: #23272f;
+  color: #cbd5e1;
   font-weight: 500;
   letter-spacing: 0.1px;
 }
@@ -453,11 +498,11 @@ const handleMaxTokensChange = (val) => {
 
 .file-info-card {
   width: 93%;
-  background: #f7f8fa;
-  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 16px;
   padding: 1.5rem 2rem 1.2rem 2rem;
-  box-shadow: 0 2px 10px 0 rgba(60, 80, 120, 0.04);
-  border: 1.5px solid #f2f3f5;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(99, 102, 241, 0.3);
   margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -477,7 +522,7 @@ const handleMaxTokensChange = (val) => {
 }
 
 .file-info-label {
-  color: #6b7280;
+  color: #94a3b8;
   font-size: 1.01rem;
   font-weight: 500;
   min-width: 70px;
@@ -488,7 +533,7 @@ const handleMaxTokensChange = (val) => {
 }
 
 .file-info-value {
-  color: #23272f;
+  color: #e2e8f0;
   font-size: 1.03rem;
   font-weight: 600;
   word-break: break-all;
@@ -555,15 +600,15 @@ const handleMaxTokensChange = (val) => {
 }
 
 .start-process-btn {
-  background: #23272f !important;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
   color: #fff !important;
   border: none !important;
-  border-radius: 8px !important;
-  font-size: 1.08rem;
+  border-radius: 12px !important;
+  font-size: 1.1rem;
   font-weight: 700;
-  padding: 0.7rem 2.2rem;
-  transition: background 0.18s;
-  box-shadow: 0 2px 8px 0 rgba(60, 80, 120, 0.06);
+  padding: 0.8rem 2.4rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
 }
 
 .start-process-btn:disabled {
@@ -574,7 +619,9 @@ const handleMaxTokensChange = (val) => {
 }
 
 .start-process-btn:hover:not(:disabled) {
-  background: #444950 !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
 }
 
 
@@ -623,25 +670,28 @@ const handleMaxTokensChange = (val) => {
   position: absolute;
   right: 0.5rem;
   bottom: 0.5rem;
-  color: #b0b3b8;
+  color: #94a3b8;
   font-size: 0.95rem;
-  /* 移除下划线 */
   text-decoration: none;
   cursor: pointer;
   background: #fff;
-  border-radius: 8px;
-  padding: 2px 12px 2px 8px;
-  transition: color 0.18s, border-color 0.18s;
+  border-radius: 10px;
+  padding: 4px 12px 4px 8px;
+  transition: all 0.3s ease;
   z-index: 2;
-  opacity: 0.85;
+  opacity: 0.9;
   display: flex;
   align-items: center;
   gap: 4px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .upload-section-reset-link:hover {
-  color: #23272f;
-  border-color: #e0e3e8;
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, 0.3);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  transform: translateY(-1px);
 }
 
 .reset-icon {
@@ -656,17 +706,7 @@ const handleMaxTokensChange = (val) => {
   display: none !important;
 }
 
-:deep(.el-upload) {
-  background: #fff !important;
-  border: 2px dashed #23272f !important;
-  border-radius: 14px !important;
-  color: #23272f !important;
-  transition: border-color 0.2s;
-}
-
-:deep(.el-upload:hover) {
-  border-color: #444950 !important;
-}
+/* 已在 .uploader :deep(.el-upload) 中定义，此处删除重复样式 */
 
 :deep(.el-upload-dragger) {
   background: transparent !important;

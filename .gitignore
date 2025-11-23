@@ -1,22 +1,59 @@
+# IDE
 .idea
-*.tar
-logs
+.vscode
+*.swp
+*.swo
+*~
+
+# Python
 .venv
+venv
+env
 __pycache__
 *.pyc
 *.pyo
-.DS_Store
 *.pyd
 *.egg-info
 *.egg
 *.whl
-*.db
-*.sqlite
-*.log
-*.pid
-*.pdb
-*.cover
-*.coverage
 .pytest_cache
 *.hypothesis
+*.cover
+*.coverage
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# 构建输出
+dist/
+build/
+*.tar
+*.zip
+
+# 日志和数据库
+logs/
+*.log
+*.db
+*.sqlite
+*.pid
+*.pdb
+
+# 环境变量和配置
 variables.env
+.env
+.env.local
+.env.*.local
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 临时文件
+*.tmp
+*.temp
+.cache/

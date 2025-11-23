@@ -44,8 +44,16 @@
                     </div>
                 </div>
             </el-popover>
-            <el-button type="primary" :icon="Download" circle size="small" title="下载内容" @click="downloadContent"
-                class="copy-btn" />
+            <el-dropdown trigger="click" @command="handleExportCommand">
+                <el-button type="primary" :icon="Download" circle size="small" title="导出内容" class="copy-btn" />
+                <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item command="copy">复制到剪贴板（公众号）</el-dropdown-item>
+                        <el-dropdown-item command="html">导出为HTML文件</el-dropdown-item>
+                        <el-dropdown-item command="markdown">导出为Markdown文件</el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+            </el-dropdown>
         </div>
         <div class="original-text-content markdown-content-area">
             <template v-if="isContentMindMap">
@@ -60,7 +68,7 @@
 
 <script setup>
 import { ref, computed, nextTick, watch } from 'vue'
-import { ElButton } from 'element-plus'
+import { ElButton, ElDropdown, ElDropdownMenu, ElDropdownItem, ElMessage } from 'element-plus'
 import { Download, List, Loading } from '@element-plus/icons-vue'
 import MarkdownIt from 'markdown-it'
 import MindMapViewer from './MindMapViewer.vue'
@@ -194,7 +202,7 @@ const scrollToHeading = (item) => {
     container.scrollTo({ top, behavior: 'smooth' })
 }
 
-// 下载内容
+// 下载内容（保留原功能）
 const downloadContent = () => {
     let filename, type
     if (isContentMindMap.value) {
@@ -214,6 +222,232 @@ const downloadContent = () => {
     a.click()
     URL.revokeObjectURL(url)
     document.body.removeChild(a)
+}
+
+// 处理导出命令
+const handleExportCommand = (command) => {
+    if (isContentMindMap.value) {
+        downloadContent() // 思维导图直接下载JSON
+        return
+    }
+    
+    switch (command) {
+        case 'copy':
+            copyToClipboard()
+            break
+        case 'html':
+            exportAsHTML()
+            break
+        case 'markdown':
+            downloadContent()
+            break
+    }
+}
+
+// 复制到剪贴板（公众号格式）
+const copyToClipboard = async () => {
+    try {
+        const contentElement = document.querySelector('.markdown-content')
+        if (!contentElement) {
+            ElMessage.error('未找到内容区域')
+            return
+        }
+
+        // 创建一个临时容器来复制内容
+        const tempDiv = document.createElement('div')
+        tempDiv.style.position = 'absolute'
+        tempDiv.style.left = '-9999px'
+        tempDiv.style.width = '800px' // 公众号常用宽度
+        
+        // 克隆内容并处理图片
+        const clonedContent = contentElement.cloneNode(true)
+        
+        // 处理所有图片：确保base64图片正常显示
+        const images = clonedContent.querySelectorAll('img')
+        images.forEach(img => {
+            // 如果图片是base64，保持原样
+            // 如果图片有src，确保是完整的URL
+            if (img.src && !img.src.startsWith('data:')) {
+                img.style.maxWidth = '100%'
+                img.style.height = 'auto'
+            }
+            // 移除可能的样式限制
+            img.style.width = ''
+            img.style.maxWidth = '100%'
+            img.style.height = 'auto'
+        })
+        
+        // 添加基本样式以确保格式正确
+        clonedContent.style.fontSize = '16px'
+        clonedContent.style.lineHeight = '1.8'
+        clonedContent.style.color = '#333'
+        
+        tempDiv.appendChild(clonedContent)
+        document.body.appendChild(tempDiv)
+        
+        // 使用Selection API复制
+        const range = document.createRange()
+        range.selectNodeContents(tempDiv)
+        const selection = window.getSelection()
+        selection.removeAllRanges()
+        selection.addRange(range)
+        
+        // 复制
+        const success = document.execCommand('copy')
+        selection.removeAllRanges()
+        document.body.removeChild(tempDiv)
+        
+        if (success) {
+            ElMessage.success('内容已复制到剪贴板，可直接粘贴到公众号编辑器')
+        } else {
+            // 备用方案：使用Clipboard API
+            const htmlContent = clonedContent.innerHTML
+            const textContent = clonedContent.innerText || clonedContent.textContent
+            
+            const clipboardItem = new ClipboardItem({
+                'text/html': new Blob([htmlContent], { type: 'text/html' }),
+                'text/plain': new Blob([textContent], { type: 'text/plain' })
+            })
+            
+            await navigator.clipboard.write([clipboardItem])
+            ElMessage.success('内容已复制到剪贴板，可直接粘贴到公众号编辑器')
+        }
+    } catch (error) {
+        console.error('复制失败:', error)
+        ElMessage.error('复制失败，请尝试导出HTML文件')
+    }
+}
+
+// 导出为HTML文件
+const exportAsHTML = () => {
+    try {
+        const contentElement = document.querySelector('.markdown-content')
+        if (!contentElement) {
+            ElMessage.error('未找到内容区域')
+            return
+        }
+        
+        // 获取内容HTML
+        const contentHTML = contentElement.innerHTML
+        
+        // 创建完整的HTML文档
+        const htmlContent = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图文内容 - ${props.taskId}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+        .markdown-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4 {
+            font-weight: 600;
+            color: #222;
+            margin: 1em 0 0.5em 0;
+            line-height: 1.5;
+        }
+        .markdown-content h1 { font-size: 1.5em; }
+        .markdown-content h2 { font-size: 1.3em; }
+        .markdown-content h3 { font-size: 1.1em; }
+        .markdown-content h4 { font-size: 1em; }
+        .markdown-content p {
+            margin: 0.5em 0;
+            color: #333;
+        }
+        .markdown-content ul,
+        .markdown-content ol {
+            padding-left: 2em;
+            margin: 0.5em 0;
+        }
+        .markdown-content li {
+            margin: 0.2em 0;
+        }
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1em auto;
+            border-radius: 8px;
+        }
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 14px;
+        }
+        .markdown-content table th,
+        .markdown-content table td {
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
+            text-align: left;
+        }
+        .markdown-content table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .markdown-content blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 1em;
+            margin: 1em 0;
+            color: #666;
+        }
+        .markdown-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        .markdown-content pre {
+            background: #f5f5f5;
+            padding: 1em;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .markdown-content pre code {
+            background: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="markdown-content">
+        ${contentHTML}
+    </div>
+</body>
+</html>`
+        
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `content_${props.taskId}.html`
+        document.body.appendChild(a)
+        a.click()
+        URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+        
+        ElMessage.success('HTML文件已导出')
+    } catch (error) {
+        console.error('导出HTML失败:', error)
+        ElMessage.error('导出失败，请重试')
+    }
 }
 </script>
 

@@ -1,7 +1,7 @@
 <template>
     <div class="loading-overlay">
-        <div class="lottie-container">
-            <LottieAnimation :animationData="lottieSrc" :width="150" :height="150" :loop="true" :autoplay="true" />
+        <div class="spinner-container">
+            <div class="spinner"></div>
         </div>
         <div class="main-text">正在智能处理您的内容</div>
         <div class="progress-bar-outer" v-if="percent !== undefined && percent !== null">
@@ -22,9 +22,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { LottieAnimation } from 'lottie-web-vue'
-import lottieSrc from '../../assets/lottie/loading.json'
 
 const props = defineProps({
     stepText: {
@@ -67,26 +64,45 @@ const props = defineProps({
     transition: opacity 0.2s;
 }
 
-.lottie-container {
-    /* 控制整体缩放和最大尺寸 */
-    max-width: 500px;
-    max-height: 500px;
-    transform: scale(0.5);
-    margin-bottom: 0.5em;
-    opacity: 0.96;
+.spinner-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: floatY 2.2s ease-in-out infinite alternate;
+    margin-bottom: 1.5em;
 }
 
-@keyframes floatY {
-    0% {
-        transform: translateY(0);
-    }
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid;
+    border-color: var(--el-color-primary);
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    position: relative;
+}
 
+.spinner::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--el-color-primary);
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-radius: 50%;
+    opacity: 0.2;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
     100% {
-        transform: translateY(-18px);
+        transform: rotate(360deg);
     }
 }
 
@@ -113,7 +129,7 @@ const props = defineProps({
 
 .progress-bar-inner {
     height: 100%;
-    background: linear-gradient(90deg, #409EFF 60%, #67C23A 100%);
+    background: var(--el-color-primary);
     border-radius: 6px;
     transition: width 0.3s cubic-bezier(.4, 0, .2, 1);
 }
@@ -127,15 +143,11 @@ const props = defineProps({
 }
 
 .step-text {
-    color: #409EFF;
+    color: var(--el-color-primary);
     font-weight: 700;
     font-size: 1.08em;
     opacity: 0.92;
     letter-spacing: 0.1px;
-    background: linear-gradient(90deg, #409EFF 60%, #67C23A 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .percent-text {

@@ -37,6 +37,7 @@ const isTasksLoading = ref(false)
 const showHistoryTasks = ref(true)
 const isInitialLoad = ref(true)
 const showSettingsDialog = ref(false)
+const logoImage = new URL('../image/2ac13691f562307e7778b1b07c0598b6.jpg', import.meta.url).href
 
 const styleList = [
     { label: 'note', name: '知识笔记', icon: new URL('../assets/笔记.svg', import.meta.url).href },
@@ -152,12 +153,12 @@ const handleDeleteTask = async (event, task) => {
         <!-- 头像和应用名称区域 -->
         <div class="app-logo">
             <div class="logo-container">
-                <!-- 纯白色 logo 区域 -->
-                <img src="/src/assets/logo.png" alt="Logo" class="app-logo-img" />
+                <!-- Logo 区域 -->
+                <img :src="logoImage" alt="Logo" class="app-logo-img" />
             </div>
             <div class="app-title">
-                <h3>AI-Media2Doc</h3>
-                <div class="app-subtitle">一键音视频转文档</div>
+                <h3>智梦AI</h3>
+                <div class="app-subtitle">智能音视频转文档</div>
             </div>
         </div>
 
@@ -238,10 +239,10 @@ const handleDeleteTask = async (event, task) => {
                             <svg viewBox="0 0 1024 1024" width="1em" height="1em">
                                 <path
                                     d="M512 320a192 192 0 1 0 0 384 192 192 0 0 0 0-384zm0 320a128 128 0 1 1 0-256 128 128 0 0 1 0 256z"
-                                    fill="#0057ff" />
+                                    fill="#6366f1" />
                                 <path
                                     d="M952 544h-56.8a376.8 376.8 0 0 0-16.8-64.8l40.8-40.8a40 40 0 0 0 0-56.8l-79.2-79.2a40 40 0 0 0-56.8 0l-40.8 40.8A376.8 376.8 0 0 0 544 128V71.6A39.6 39.6 0 0 0 504.4 32h-112.8A39.6 39.6 0 0 0 352 71.6V128a376.8 376.8 0 0 0-64.8 16.8l-40.8-40.8a40 40 0 0 0-56.8 0l-79.2 79.2a40 40 0 0 0 0 56.8l40.8 40.8A376.8 376.8 0 0 0 128 480H71.6A39.6 39.6 0 0 0 32 519.6v112.8A39.6 39.6 0 0 0 71.6 672H128a376.8 376.8 0 0 0 16.8 64.8l-40.8 40.8a40 40 0 0 0 0 56.8l79.2 79.2a40 40 0 0 0 56.8 0l40.8-40.8A376.8 376.8 0 0 0 480 896v56.4A39.6 39.6 0 0 0 519.6 992h112.8A39.6 39.6 0 0 0 672 952.4V896a376.8 376.8 0 0 0 64.8-16.8l40.8 40.8a40 40 0 0 0 56.8 0l79.2-79.2a40 40 0 0 0 0-56.8l-40.8-40.8A376.8 376.8 0 0 0 896 544h56.4A39.6 39.6 0 0 0 992 504.4v-112.8A39.6 39.6 0 0 0 952 544z"
-                                    fill="#0057ff" />
+                                    fill="#6366f1" />
                             </svg>
                         </el-icon>
                     </el-icon>
@@ -254,7 +255,7 @@ const handleDeleteTask = async (event, task) => {
         <!-- 底部版权信息 -->
         <div class="sidebar-footer">
             <div class="footer-content">
-                <p>© 2025 AI 视频图文创作助手</p>
+                <p>© 2025 智梦AI 智能创作助手</p>
             </div>
         </div>
     </div>
@@ -270,12 +271,11 @@ const handleDeleteTask = async (event, task) => {
     left: 0;
     top: 0;
     z-index: 1000;
-    background-color: #f7f8fa;
-    /* 修改阴影为四周都明显 */
-    box-shadow: 0 1px 8px 0px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     transition: all 0.3s ease;
-    border-right: 1.5px solid #f2f3f5;
+    border-right: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .app-logo {
@@ -283,8 +283,8 @@ const handleDeleteTask = async (event, task) => {
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 1.5px solid #f2f3f5;
-    background: linear-gradient(to bottom, #fff 80%, #f7f8fa 100%);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
 }
 
 
@@ -295,14 +295,15 @@ const handleDeleteTask = async (event, task) => {
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    background: #fff;
-    /* 纯白色背景 */
-    box-shadow: none;
-    /* 去除阴影 */
+    background: transparent;
     overflow: hidden;
     position: relative;
-    border: 1.5px solid #f2f3f5;
-    /* 可选：加淡灰色边框以区分背景 */
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.logo-container:hover {
+    transform: scale(1.05);
 }
 
 /* 移除 logo-container::after 伪元素 */
@@ -311,8 +312,8 @@ const handleDeleteTask = async (event, task) => {
 }
 
 .app-logo-img {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     object-fit: contain;
     display: block;
     margin: auto;
@@ -326,11 +327,10 @@ const handleDeleteTask = async (event, task) => {
     background-color: transparent;
     padding: 18px 0 0 0;
     overflow-y: none;
-
 }
 
 .menu-icon-new {
-    color: #0057ff;
+    color: #6366f1;
 }
 
 .menu-item {
@@ -338,13 +338,19 @@ const handleDeleteTask = async (event, task) => {
     line-height: normal !important;
     padding: 0 !important;
     margin: 6px 14px !important;
-    border-radius: 10px;
-    transition: all 0.2s ease;
+    border-radius: 12px;
+    transition: all 0.3s ease;
     overflow: hidden;
-    background: #fff;
-    border: 1px solid #f2f3f5;
-    box-shadow: 0 1px 4px rgba(60, 80, 120, 0.04);
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
 
+.menu-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(129, 140, 248, 0.5);
 }
 
 .menu-item-content {
@@ -359,44 +365,44 @@ const handleDeleteTask = async (event, task) => {
 .menu-item-content span {
     font-size: 15px;
     font-weight: 600;
-    color: #0057ff;
+    color: #cbd5e1;
     letter-spacing: 0.1px;
 }
 
 .menu-icon {
     font-size: 19px;
-    color: #444950;
+    color: #cbd5e1;
     transition: all 0.2s ease;
 }
 
 .sidebar-menu :deep(.el-menu-item) {
-    /* transition: all 0.2s ease; */
     min-height: auto;
     height: auto;
     background: transparent;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
     box-shadow: none;
-    border: 1px solid #0057ff;
+    border: 1px solid transparent;
 }
 
 .sidebar-menu :deep(.el-menu-item.is-active) {
-    background: rgba(0, 87, 255, 0.06);
-    color: #0057ff;
-    border-radius: 10px;
-    /* font-weight: 700; */
-    border: 1px solid #0057ff;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+    color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid rgba(129, 140, 248, 0.5);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 .sidebar-menu :deep(.el-menu-item.is-active) .menu-icon {
-    color: #0057ff;
+    color: #ffffff;
+}
+
+.sidebar-menu :deep(.el-menu-item.is-active) .menu-item-content span {
+    color: #ffffff;
 }
 
 .sidebar-menu :deep(.el-menu-item:hover) {
-    background-color: #d9e5f8;
-    /* color: #e1681d; */
-    /* transform: translateY(-1px); */
-    /* box-shadow: 0 2px 8px rgba(60, 80, 120, 0.08); */
+    background-color: rgba(99, 102, 241, 0.15);
 }
 
 .sidebar-menu :deep(.el-menu-item:hover) .menu-icon {
@@ -410,11 +416,11 @@ const handleDeleteTask = async (event, task) => {
 /* 历史任务区域样式 */
 .history-section {
     margin: 10px 14px;
-    border-radius: 10px;
-    background-color: #fff;
+    border-radius: 12px;
+    background-color: rgba(30, 41, 59, 0.6);
     overflow: hidden;
-    box-shadow: 0 1px 4px rgba(60, 80, 120, 0.04);
-    border: 1px solid #f2f3f5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
 .history-header {
@@ -425,17 +431,16 @@ const handleDeleteTask = async (event, task) => {
     cursor: pointer;
     transition: all 0.2s ease;
     border-radius: 10px 10px 0 0;
-    border-bottom: 1px solid #f2f3f5;
-    /* background-color: #f7f8fa; */
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .history-header:hover {
-    background-color: #e9eaec;
+    background-color: rgba(99, 102, 241, 0.15);
 }
 
 .expand-icon {
     font-size: 15px;
-    color: #909399;
+    color: #94a3b8;
     transition: transform 0.3s ease;
 }
 
@@ -449,7 +454,7 @@ const handleDeleteTask = async (event, task) => {
     transition: max-height 0.3s ease, opacity 0.3s ease;
     opacity: 0;
     margin-top: 0;
-    background-color: #fff;
+    background-color: rgba(15, 23, 42, 0.4);
 }
 
 .history-submenu.is-expanded {
@@ -466,11 +471,12 @@ const handleDeleteTask = async (event, task) => {
 .history-empty {
     padding: 15px;
     text-align: center;
-    color: #909399;
+    color: #94a3b8;
     font-size: 13px;
-    background-color: #f5f6fa;
+    background-color: rgba(15, 23, 42, 0.6);
     border-radius: 8px;
     margin: 8px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .history-list {
@@ -486,20 +492,20 @@ const handleDeleteTask = async (event, task) => {
     margin: 2px 4px;
     gap: 10px;
     transition: all 0.2s ease;
-    background-color: #f7f8fa;
+    background-color: rgba(15, 23, 42, 0.6);
     border-left: 2px solid transparent;
     position: relative;
 }
 
 .history-item:hover {
-    background-color: #f3f4f6;
+    background-color: rgba(99, 102, 241, 0.2);
     transform: translateX(2px);
-    border-left: 2px solid #23272f;
+    border-left: 2px solid rgba(129, 140, 248, 0.8);
 }
 
 .history-icon {
     font-size: 15px;
-    color: #909399;
+    color: #94a3b8;
     margin-top: 2px;
     transition: all 0.2s ease;
 }
@@ -513,11 +519,11 @@ const handleDeleteTask = async (event, task) => {
 
 .history-icon-el {
     font-size: 15px;
-    color: #909399;
+    color: #94a3b8;
 }
 
 .history-item:hover .history-icon {
-    color: #23272f;
+    color: #c7d2fe;
 }
 
 .history-info {
@@ -531,7 +537,7 @@ const handleDeleteTask = async (event, task) => {
 
 .history-title {
     font-size: 13px;
-    color: #23272f;
+    color: #e2e8f0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -555,16 +561,16 @@ const handleDeleteTask = async (event, task) => {
     font-weight: 500;
     border-radius: 4px;
     text-align: left;
-    box-shadow: 0 1px 2px rgba(60, 80, 120, 0.04);
-    background: #f5f6fa !important;
-    border: 1px solid #e0e3e8 !important;
-    color: #23272f !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    background: rgba(99, 102, 241, 0.2) !important;
+    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+    color: #c7d2fe !important;
 }
 
 .sidebar-footer {
     padding: 14px 16px;
-    border-top: 1.5px solid #f2f3f5;
-    background-color: #f7f8fa;
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
     text-align: center;
 }
 
@@ -575,26 +581,29 @@ const handleDeleteTask = async (event, task) => {
 .footer-content p {
     margin: 0;
     font-size: 11px;
-    color: #909399;
+    color: #94a3b8;
     letter-spacing: 0.1px;
 }
 
 .app-title h3 {
     margin: 0;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 800;
-    color: #23272f;
+    background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     letter-spacing: 0.5px;
-    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
+    text-shadow: 0 0 20px rgba(129, 140, 248, 0.3);
 }
 
 .app-subtitle {
     font-size: 12px;
-    color: #909399;
-    margin-top: 2px;
-    font-weight: 00;
+    color: #94a3b8;
+    margin-top: 4px;
+    font-weight: 500;
     letter-spacing: 0.2px;
-    line-height: 1.2;
+    line-height: 1.4;
     text-align: left;
 }
 
@@ -692,26 +701,42 @@ const handleDeleteTask = async (event, task) => {
     top: 50%;
     transform: translateY(-50%);
     transition: all 0.2s ease;
-    background: rgba(250, 250, 250, 0.9);
-    border-radius: 4px;
-    padding: 3px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 6px;
+    padding: 4px 6px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .history-item:hover .history-actions {
     opacity: 1;
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 #historyTaskText {
-    color: #23272f !important;
+    color: #cbd5e1 !important;
 }
 
 .delete-icon {
-    color: #f56c6c;
-    font-size: 14px;
+    color: #ef4444;
+    font-size: 16px;
     cursor: pointer;
-    padding: 3px;
+    padding: 2px;
     border-radius: 4px;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.delete-icon:hover {
+    color: #dc2626;
+    transform: scale(1.15);
+    filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.6));
 }
 
 .delete-icon:hover {
@@ -731,12 +756,12 @@ const handleDeleteTask = async (event, task) => {
 .settings-menu-item {
     width: 92%;
     margin: 0 auto 10px auto !important;
-    background: #fff;
-    border: 1.5px solid #f2f3f5;
-    border-radius: 10px;
-    box-shadow: 0 1px 4px rgba(60, 80, 120, 0.04);
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transition: all 0.18s;
+    transition: all 0.3s ease;
     padding: 0;
     display: flex;
     align-items: center;
@@ -744,9 +769,10 @@ const handleDeleteTask = async (event, task) => {
 }
 
 .settings-menu-item:hover {
-    background: #f0f6ff;
-    border-color: #0057ff;
-    box-shadow: 0 2px 8px rgba(0, 87, 255, 0.07);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+    border-color: rgba(129, 140, 248, 0.5);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
 }
 
 .settings-btn-content {
@@ -762,15 +788,19 @@ const handleDeleteTask = async (event, task) => {
 .settings-btn-content span {
     font-size: 15px;
     font-weight: 700;
-    color: #0057ff;
+    color: #cbd5e1;
     letter-spacing: 0.1px;
 }
 
 .menu-icon-settings {
-    color: #0057ff;
+    color: #cbd5e1;
     font-size: 18px;
     display: flex;
     align-items: center;
+}
+
+.menu-icon-new {
+    color: #cbd5e1;
 }
 </style>
 

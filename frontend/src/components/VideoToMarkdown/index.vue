@@ -7,7 +7,7 @@ import { loadFFmpeg, extractAudio, captureVideoFrame, frameToBase64, cleanupVide
 import { submitAsrTask, pollAsrTask } from '../../apis/asrService'
 import { generateMarkdownText } from '../../apis/markdownService'
 import { calculateMD5 } from '../../utils/md5'
-import { getAudioUploadUrl, uploadFile } from '../../apis'
+import { getAudioUploadUrl, uploadFile, uploadFileViaProxy } from '../../apis'
 import { saveTask, checkTaskExistsByMd5AndStyle, getAnyTaskByMd5, getTaskByID } from '../../utils/db'
 import { eventBus } from '../../utils/eventBus'
 
@@ -155,9 +155,23 @@ const startProcessing = async () => {
     } else {
       // 全新的任务才需要上传和识别
       updateStepStatus(2, 'processing')
-      const uploadUrl = await getAudioUploadUrl(audioFilename.value)
-      await uploadFile(uploadUrl, new Blob([audioBuf], { type: 'audio/mpeg' }))
-      updateStepStatus(2, 'success')
+      // 使用代理上传避免 CORS 问题
+      try {
+        await uploadFileViaProxy(
+          audioFilename.value,
+          new Blob([audioBuf], { type: 'audio/mpeg' }),
+          (percent) => {
+            console.log(`上传进度: ${percent}%`)
+          }
+        )
+        updateStepStatus(2, 'success')
+      } catch (error) {
+        // 如果代理上传失败，尝试直接上传（可能 CORS 已配置好）
+        console.warn('代理上传失败，尝试直接上传:', error)
+        const uploadUrl = await getAudioUploadUrl(audioFilename.value)
+        await uploadFile(uploadUrl, new Blob([audioBuf], { type: 'audio/mpeg' }))
+        updateStepStatus(2, 'success')
+      }
 
       updateStepStatus(3, 'processing')
       const taskId = await submitAsrTask(audioFilename.value)
@@ -188,7 +202,16 @@ const startProcessing = async () => {
     } else {
       processedText = transcriptionText.value
     }
-    const md = await generateMarkdownText(processedText, style.value, remarks.value, llmTimeout.value, llmMaxTokens.value)
+    let md = await generateMarkdownText(processedText, style.value, remarks.value, llmTimeout.value, llmMaxTokens.value)
+    
+    // 移除所有时间戳格式：[mm:ss-mm:ss] 或 [hh:mm:ss-hh:mm:ss] 等
+    // 匹配格式：[...] 其中包含时间格式，如 [00:04-00:21]、[00:00:04-00:00:21] 等
+    md = md.replace(/\[\d{1,2}:\d{2}(?::\d{2})?-\d{1,2}:\d{2}(?::\d{2})?\]/g, '')
+    // 移除可能的时间范围格式，如 [00:04 - 00:21]
+    md = md.replace(/\[\d{1,2}:\d{2}(?::\d{2})?\s*-\s*\d{1,2}:\d{2}(?::\d{2})?\]/g, '')
+    // 清理多余的空格和换行
+    md = md.replace(/\n{3,}/g, '\n\n').trim()
+    
     // 提取所有时间戳标记 #image[20] 格式（整数秒数）
     const imageTimeRegex = /#image\[(\d+)\]/g
     const imageTimeMarkers = md.match(imageTimeRegex) || []

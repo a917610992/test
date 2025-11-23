@@ -1,6 +1,21 @@
 # -*- coding: UTF-8 -*-
 
 import os
+from pathlib import Path
+
+# 尝试加载 .env 文件
+try:
+    from dotenv import load_dotenv
+    
+    # 查找 .env 文件，优先使用项目根目录的 .env
+    env_path = Path(__file__).parent.parent / ".env"
+    if not env_path.exists():
+        env_path = Path(__file__).parent / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    # 如果没有安装 python-dotenv，跳过
+    pass
 
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
 LLM_MODEL_ID = os.getenv("MODEL_ID")

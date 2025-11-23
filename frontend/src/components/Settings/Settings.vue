@@ -25,6 +25,12 @@
                         </el-icon>
                         <span>智能截图</span>
                     </li>
+                    <li :class="{ active: activeMenu === 'model' }" @click="activeMenu = 'model'">
+                        <el-icon>
+                            <Setting />
+                        </el-icon>
+                        <span>模型配置</span>
+                    </li>
                     <li :class="{ active: activeMenu === 'other' }" @click="activeMenu = 'other'">
                         <el-icon>
                             <Setting />
@@ -37,12 +43,6 @@
                         </el-icon>
                         <span>连通性测试</span>
                     </li>
-                    <li :class="{ active: activeMenu === 'about' }" @click="activeMenu = 'about'">
-                        <el-icon>
-                            <InfoFilled />
-                        </el-icon>
-                        <span>关于</span>
-                    </li>
                 </ul>
             </div>
             <div class="settings-content">
@@ -53,8 +53,8 @@
                     <SettingsStyle v-if="activeMenu === 'style'" />
                     <SettingsPassword v-if="activeMenu === 'password'" />
                     <SettingsScreenshot v-if="activeMenu === 'screenshot'" />
+                    <SettingsModel v-if="activeMenu === 'model'" />
                     <SettingsOther v-if="activeMenu === 'other'" />
-                    <SettingsAbout v-if="activeMenu === 'about'" />
                     <SettingsConnectivity v-if="activeMenu === 'connectivity'" />
                 </div>
             </div>
@@ -64,12 +64,12 @@
 
 <script setup>
 import { ref, watch, defineProps, defineEmits } from 'vue'
-import { Document, Lock, Picture, Setting, InfoFilled, Link } from '@element-plus/icons-vue'
+import { Document, Lock, Picture, Setting, Link } from '@element-plus/icons-vue'
 import SettingsStyle from './SettingsStyle.vue'
 import SettingsPassword from './SettingsPassword.vue'
 import SettingsScreenshot from './SettingsScreenshot.vue'
+import SettingsModel from './SettingsModel.vue'
 import SettingsOther from './SettingsOther.vue'
-import SettingsAbout from './SettingsAbout.vue'
 import SettingsConnectivity from './SettingsConnectivity.vue'
 
 const props = defineProps({
@@ -100,13 +100,13 @@ const menuConfig = {
     screenshot: {
         title: '智能截图'
     },
+    model: {
+        title: '模型配置'
+    },
     other: {
         title: '其他设置'
     },
-    connectivity: { title: '连通性' },
-    about: {
-        title: '关于'
-    }
+    connectivity: { title: '连通性' }
 }
 
 function getMenuTitle() {

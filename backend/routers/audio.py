@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 import hashlib
 import json
 import uuid
@@ -11,8 +11,8 @@ from models import FileNameRequest
 from core.exceptions import BusinessException, ExternalServiceException
 from core.response import success_response, APIResponse
 from config.log import get_logger
-import env
 from utils.s3 import generate_download_url
+from utils.config import get_asr_app_id, get_asr_access_token, get_asr_cluster_id
 
 router = APIRouter(prefix="/audio", tags=["Audio"])
 logger = get_logger(__name__)
@@ -28,7 +28,7 @@ def generate_local_uuid():
 
 
 @router.post("/transcription-tasks", response_model=APIResponse)
-async def create_transcription_task(request: FileNameRequest):
+async def create_transcription_task(request: FileNameRequest, http_request: Request):
     """创建音频转写任务
 
     RESTful路径: POST /api/v1/audio/transcription-tasks
@@ -36,14 +36,24 @@ async def create_transcription_task(request: FileNameRequest):
     logger.info(f"Creating transcription task for file: {request.filename}")
 
     try:
+        app_id = get_asr_app_id(http_request)
+        access_token = get_asr_access_token(http_request)
+        cluster_id = get_asr_cluster_id(http_request)
+        
+        if not app_id or not access_token or not cluster_id:
+            raise ValueError("音频识别配置不完整，请检查 AUC_APP_ID、AUC_ACCESS_TOKEN 和 AUC_CLUSTER_ID")
+        
         submit_url = "https://openspeech.bytedance.com/api/v1/auc/submit"
-        download_url = generate_download_url(request.filename)
+        download_url = generate_download_url(request.filename, http_request)
+        
+        logger.info(f"Download URL: {download_url}")
+        logger.info(f"ASR Config - APP_ID: {app_id[:8]}..., CLUSTER_ID: {cluster_id}")
 
         data = {
             "app": {
-                "appid": env.AUC_APP_ID,
-                "token": env.AUC_ACCESS_TOKEN,
-                "cluster": env.AUC_CLUSTER_ID,
+                "appid": app_id,
+                "token": access_token,
+                "cluster": cluster_id,
             },
             "user": {
                 "uid": generate_local_uuid(),
@@ -53,15 +63,37 @@ async def create_transcription_task(request: FileNameRequest):
         }
 
         headers = {
-            "Authorization": f"Bearer; {env.AUC_ACCESS_TOKEN}",
+            "Authorization": f"Bearer; {access_token}",
+            "Content-Type": "application/json",
         }
 
         with Throttled(
-            key=env.AUC_APP_ID, store=STORE, quota=per_sec(limit=100, burst=100)
+            key=app_id, store=STORE, quota=per_sec(limit=100, burst=100)
         ):
+            logger.info(f"Submitting ASR task to: {submit_url}")
+            logger.info(f"Request data: {json.dumps(data, ensure_ascii=False)}")
             response = requests.post(submit_url, data=json.dumps(data), headers=headers)
+            logger.info(f"ASR service response status: {response.status_code}")
+            logger.info(f"ASR service response: {response.text}")
 
-        response.raise_for_status()
+        # 检查响应状态
+        if response.status_code != 200:
+            try:
+                error_resp = response.json()
+                error_code = error_resp.get("resp", {}).get("code", "unknown")
+                error_message = error_resp.get("resp", {}).get("message", response.text)
+                logger.error(f"ASR service error - Code: {error_code}, Message: {error_message}")
+                raise ExternalServiceException(
+                    "Volcengine ASR", 
+                    f"Request failed: {error_code} - {error_message}"
+                )
+            except (ValueError, KeyError):
+                # 如果响应不是 JSON 格式
+                raise ExternalServiceException(
+                    "Volcengine ASR", 
+                    f"Request failed: {response.status_code} - {response.text}"
+                )
+        
         resp = response.json()
 
         if resp["resp"]["message"] != "success":
@@ -87,7 +119,7 @@ async def create_transcription_task(request: FileNameRequest):
 
 
 @router.get("/transcription-tasks/{task_id}", response_model=APIResponse)
-async def get_transcription_task(task_id: str):
+async def get_transcription_task(task_id: str, http_request: Request):
     """获取音频转写任务状态
 
     RESTful路径: GET /api/v1/audio/transcription-tasks/{task_id}
@@ -95,20 +127,27 @@ async def get_transcription_task(task_id: str):
     logger.info(f"Querying transcription task status: {task_id}")
 
     try:
+        app_id = get_asr_app_id(http_request)
+        access_token = get_asr_access_token(http_request)
+        cluster_id = get_asr_cluster_id(http_request)
+        
+        if not app_id or not access_token or not cluster_id:
+            raise ValueError("音频识别配置不完整，请检查 AUC_APP_ID、AUC_ACCESS_TOKEN 和 AUC_CLUSTER_ID")
+        
         data = {
-            "appid": env.AUC_APP_ID,
-            "token": env.AUC_ACCESS_TOKEN,
-            "cluster": env.AUC_CLUSTER_ID,
+            "appid": app_id,
+            "token": access_token,
+            "cluster": cluster_id,
             "id": task_id,
         }
         query_url = "https://openspeech.bytedance.com/api/v1/auc/query"
 
         headers = {
-            "Authorization": f"Bearer; {env.AUC_ACCESS_TOKEN}",
+            "Authorization": f"Bearer; {access_token}",
         }
 
         with Throttled(
-            key=env.AUC_APP_ID, store=STORE, quota=per_sec(limit=100, burst=100)
+            key=app_id, store=STORE, quota=per_sec(limit=100, burst=100)
         ):
             response = requests.post(query_url, json.dumps(data), headers=headers)
 

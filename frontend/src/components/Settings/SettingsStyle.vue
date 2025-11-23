@@ -9,7 +9,7 @@
         </div>
         <div class="prompt-editor-row">
             <div class="prompt-tip">
-                请勿修改 <code>{content}</code> 以及思维导图的 json 内容，不然可能会导致生成失败。
+                请勿修改 <code>{content}</code>，不然可能会导致生成失败。
             </div>
             <div class="prompt-label-row">
                 <label class="prompt-label">Prompt：</label>
@@ -45,7 +45,6 @@ const styleList = [
     { label: 'xiaohongshu', name: '小红书', icon: new URL('../../assets/小红书.svg', import.meta.url).href },
     { label: 'wechat', name: '公众号', icon: new URL('../../assets/微信公众号.svg', import.meta.url).href },
     { label: 'summary', name: '内容总结', icon: new URL('../../assets/汇总.svg', import.meta.url).href },
-    { label: 'mind', name: '思维导图', icon: new URL('../../assets/思维导图.svg', import.meta.url).href },
 ]
 
 function getLocalPrompts() {

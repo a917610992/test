@@ -53,8 +53,11 @@ async def verify_web_access_password(
         and request_web_access_password != env.WEB_ACCESS_PASSWORD
     ):
         logger.warning("Unauthorized access attempt")
-        raise HTTPException(
-            status_code=401, detail="Unauthorized: Invalid or missing web-access-token"
+        from core.exceptions import APIException
+        raise APIException(
+            status_code=401,
+            message="Unauthorized: Invalid or missing web-access-token",
+            error_code="UNAUTHORIZED",
         )
     return True
 
@@ -89,4 +92,4 @@ if __name__ == "__main__":
     import uvicorn
 
     logger.info("Starting AI Media2Doc API server...")
-    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=20201, reload=True)
